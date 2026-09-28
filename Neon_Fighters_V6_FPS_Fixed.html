@@ -1,0 +1,3405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON FIGHTERS — Early Access</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#050510;
+    font-family:Arial,sans-serif;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+}
+
+/* ================= MENU ================= */
+
+#menu{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+        radial-gradient(
+            circle,
+            #21135c 0%,
+            #0b0820 45%,
+            #03030a 100%
+        );
+}
+
+.menuGlow{
+    position:absolute;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    background:#7b2cff;
+    filter:blur(130px);
+    opacity:.25;
+    animation:glow 4s infinite alternate;
+}
+
+@keyframes glow{
+    from{
+        transform:scale(.8);
+        opacity:.18;
+    }
+
+    to{
+        transform:scale(1.2);
+        opacity:.35;
+    }
+}
+
+.menuContent{
+    position:relative;
+    z-index:2;
+    text-align:center;
+}
+
+.title{
+    margin:0;
+    color:white;
+    font-size:clamp(55px,10vw,125px);
+    font-weight:1000;
+    line-height:.85;
+    letter-spacing:7px;
+
+    text-shadow:
+        5px 5px 0 #ff1744,
+        -5px -5px 0 #00d9ff,
+        0 0 25px #8a2be2,
+        0 0 60px #8a2be2;
+}
+
+.earlyAccess{
+    display:inline-block;
+
+    margin-left:12px;
+    padding:8px 12px;
+
+    vertical-align:middle;
+
+    color:#ffcc00;
+
+    border:2px solid #ffcc00;
+
+    background:rgba(255,204,0,.08);
+
+    font-size:13px;
+    font-weight:bold;
+
+    letter-spacing:3px;
+
+    text-shadow:
+        0 0 10px #ffcc00;
+
+    box-shadow:
+        0 0 10px #ffcc0044,
+        inset 0 0 10px #ffcc0015;
+
+    transform:rotate(-2deg);
+
+    animation:earlyPulse 2s infinite alternate;
+}
+
+@keyframes earlyPulse{
+
+    from{
+        box-shadow:
+            0 0 5px #ffcc0044;
+    }
+
+    to{
+        box-shadow:
+            0 0 20px #ffcc0088;
+    }
+}
+
+.subtitle{
+    margin:15px 0 40px;
+
+    color:#aaa;
+
+    letter-spacing:8px;
+
+    font-size:14px;
+}
+
+.menuButton{
+    display:block;
+
+    width:270px;
+
+    margin:14px auto;
+
+    padding:16px;
+
+    background:rgba(10,10,30,.8);
+
+    border:2px solid #00d9ff;
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.15s;
+}
+
+.menuButton:hover{
+    transform:scale(1.08);
+
+    background:#00d9ff22;
+
+    box-shadow:
+        0 0 15px #00d9ff;
+}
+
+.playButton{
+    border-color:#ff1744;
+
+    box-shadow:
+        0 0 15px #ff1744;
+}
+
+.multiplayerButton{
+    position:relative;
+
+    height:75px;
+
+    border-color:#777;
+
+    color:#888;
+
+    overflow:hidden;
+}
+
+.multiplayerText{
+    display:block;
+
+    font-size:18px;
+}
+
+.comingSoon{
+    display:block;
+
+    margin-top:4px;
+
+    font-size:10px;
+
+    letter-spacing:3px;
+
+    color:#ffcc00;
+}
+
+.cross{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%)
+        rotate(-15deg);
+
+    font-size:75px;
+
+    color:#ff1744;
+
+    opacity:.25;
+
+    pointer-events:none;
+
+    text-shadow:
+        0 0 15px #ff1744,
+        0 0 35px #ff1744;
+}
+
+
+
+/* ================= SETTINGS ================= */
+
+.settingsRow{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:14px 0;
+    border-bottom:1px solid #29294a;
+}
+
+.settingsRow:last-of-type{
+    border-bottom:0;
+}
+
+.settingsLabel{
+    color:#fff;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+.settingsControl{
+    min-width:190px;
+    padding:9px 12px;
+    color:white;
+    background:#111126;
+    border:1px solid #00d9ff;
+    border-radius:5px;
+    font-weight:bold;
+}
+
+.settingsRange{
+    width:190px;
+    accent-color:#00d9ff;
+}
+
+.settingsValue{
+    display:inline-block;
+    width:48px;
+    text-align:right;
+    color:#00d9ff;
+    font-family:monospace;
+    font-weight:bold;
+}
+
+.settingsDisabled{
+    color:#ffcc00;
+    font-size:12px;
+    text-align:right;
+    line-height:1.4;
+}
+
+.settingsButton{
+    width:100%;
+    margin-top:14px;
+    padding:12px;
+    color:white;
+    background:#111126;
+    border:1px solid #8a2be2;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.settingsButton:hover{
+    background:#8a2be222;
+    box-shadow:0 0 15px #8a2be2;
+}
+
+@media(max-width:700px){
+    .settingsRow{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .settingsControl,
+    .settingsRange{
+        width:100%;
+        min-width:0;
+    }
+
+    .settingsDisabled{
+        text-align:left;
+    }
+}
+
+/* ================= PANELS ================= */
+
+.panel{
+    position:fixed;
+
+    inset:0;
+
+    z-index:120;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(2,2,10,.94);
+}
+
+.panelBox{
+    width:min(700px,90%);
+
+    max-height:85vh;
+
+    overflow-y:auto;
+
+    padding:35px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #171733,
+            #09091a
+        );
+
+    border:2px solid #8a2be2;
+
+    box-shadow:
+        0 0 30px #8a2be266;
+
+    color:white;
+}
+
+.panelBox h2{
+    color:#00d9ff;
+
+    font-size:36px;
+}
+
+.panelBox p{
+    color:#ccc;
+
+    line-height:1.6;
+}
+
+.key{
+    display:inline-block;
+
+    padding:5px 9px;
+
+    margin:2px;
+
+    border:1px solid #777;
+
+    background:#222;
+
+    border-radius:5px;
+
+    font-family:monospace;
+}
+
+.comingSoonBox{
+    text-align:center;
+
+    border-color:#ff1744;
+}
+
+.bigCross{
+    font-size:100px;
+
+    color:#ff1744;
+
+    text-shadow:
+        0 0 15px #ff1744,
+        0 0 40px #ff1744;
+}
+
+.soonText{
+    color:#ffcc00;
+
+    font-size:24px;
+
+    font-weight:bold;
+
+    letter-spacing:6px;
+}
+
+
+/* ================= GAME ================= */
+
+#gameUI{
+    display:none;
+}
+
+#gameEarlyAccess{
+    position:fixed;
+
+    top:15px;
+    right:18px;
+
+    z-index:30;
+
+    padding:8px 13px;
+
+    color:#ffcc00;
+
+    background:rgba(5,5,15,.85);
+
+    border:2px solid #ffcc00;
+
+    border-radius:5px;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    letter-spacing:3px;
+
+    text-shadow:
+        0 0 10px #ffcc00;
+
+    box-shadow:
+        0 0 15px #ffcc0044;
+}
+
+#fps{
+    position:fixed;
+
+    top:10px;
+    left:10px;
+
+    padding:6px 10px;
+
+    color:#00ff66;
+
+    background:rgba(0,0,0,.75);
+
+    border:1px solid #00ff66;
+
+    border-radius:5px;
+
+    font-family:monospace;
+
+    font-weight:bold;
+
+    z-index:30;
+}
+
+#botLabel{
+    position:fixed;
+
+    top:55px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    color:#00d9ff;
+
+    font-weight:bold;
+
+    letter-spacing:3px;
+
+    text-shadow:
+        0 0 10px #00d9ff;
+
+    z-index:20;
+}
+
+#ui{
+    position:fixed;
+
+    top:15px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:80%;
+
+    display:flex;
+
+    gap:15px;
+
+    align-items:center;
+
+    z-index:10;
+}
+
+.health{
+    flex:1;
+
+    height:27px;
+
+    background:#222;
+
+    border:3px solid white;
+}
+
+.bar{
+    height:100%;
+
+    width:100%;
+
+    transition:width .15s;
+}
+
+#p1{
+    background:
+        linear-gradient(
+            90deg,
+            #ff1744,
+            #ff6b6b
+        );
+}
+
+#p2{
+    background:
+        linear-gradient(
+            90deg,
+            #00d9ff,
+            #168cff
+        );
+}
+
+#timer{
+    width:55px;
+
+    color:white;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    text-align:center;
+}
+
+#abilities{
+    position:fixed;
+
+    bottom:42px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:min(850px,90%);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    z-index:10;
+}
+
+.abilityBox{
+    width:190px;
+
+    padding:8px;
+
+    border:2px solid white;
+
+    background:rgba(0,0,0,.75);
+
+    text-align:center;
+
+    border-radius:8px;
+}
+
+.redAbility{
+    border-color:#ff1744;
+}
+
+.blueAbility{
+    border-color:#00d9ff;
+}
+
+.abilityName{
+    font-weight:bold;
+
+    font-size:13px;
+
+    margin:3px;
+}
+
+.cooldown{
+    margin-top:5px;
+
+    height:9px;
+
+    background:#333;
+
+    border-radius:5px;
+
+    overflow:hidden;
+}
+
+.cooldownBar{
+    height:100%;
+
+    width:100%;
+}
+
+.redCD{
+    background:#ff1744;
+}
+
+.blueCD{
+    background:#00d9ff;
+}
+
+.cdText{
+    margin-top:3px;
+
+    font-size:11px;
+
+    color:#ddd;
+}
+
+#message{
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:white;
+
+    font-size:clamp(
+        45px,
+        8vw,
+        90px
+    );
+
+    font-weight:bold;
+
+    text-align:center;
+
+    text-shadow:
+        0 0 20px #ff00ff,
+        0 0 50px #5555ff;
+
+    z-index:50;
+}
+
+#controls{
+    position:fixed;
+
+    bottom:10px;
+
+    width:100%;
+
+    text-align:center;
+
+    color:#aaa;
+
+    font-size:12px;
+
+    z-index:10;
+}
+
+#menuButtonGame{
+    position:fixed;
+
+    top:55px;
+    left:10px;
+
+    z-index:30;
+
+    padding:7px 12px;
+
+    color:white;
+
+    background:#111;
+
+    border:1px solid #8a2be2;
+
+    cursor:pointer;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+    .title{
+        font-size:52px;
+    }
+
+    .earlyAccess{
+        display:block;
+
+        width:max-content;
+
+        margin:18px auto;
+    }
+
+    #ui{
+        width:92%;
+    }
+
+    #abilities{
+        width:95%;
+    }
+
+    .abilityBox{
+        width:145px;
+    }
+
+    #controls{
+        font-size:9px;
+    }
+}
+
+/* ================================================= */
+/* FIGHT COUNTDOWN */
+/* ================================================= */
+
+#fightCountdown{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    color:#ffffff;
+    font-family:Arial, sans-serif;
+    font-size:clamp(72px, 13vw, 180px);
+    font-weight:900;
+    font-style:italic;
+    letter-spacing:8px;
+    text-shadow:
+        0 0 10px #ffffff,
+        0 0 25px #00d9ff,
+        0 0 55px #ff1744;
+    animation:countdownPop .7s ease both;
+}
+
+@keyframes countdownPop{
+    0%{
+        opacity:0;
+        transform:scale(.45) rotate(-6deg);
+    }
+    55%{
+        opacity:1;
+        transform:scale(1.12) rotate(2deg);
+    }
+    100%{
+        opacity:1;
+        transform:scale(1) rotate(0);
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- ================================================= -->
+<!-- MENU -->
+<!-- ================================================= -->
+
+<div id="menu">
+
+    <div class="menuGlow"></div>
+
+    <div class="menuContent">
+
+        <h1 class="title">
+            NEON<br>
+            FIGHTERS
+
+            <span class="earlyAccess">
+                EARLY ACCESS
+            </span>
+        </h1>
+
+        <div class="subtitle">
+            ENTER THE ARENA
+        </div>
+
+        <button
+            class="menuButton playButton"
+            onclick="startGame()">
+
+             PLAY
+
+        </button>
+
+
+        <button
+            class="menuButton multiplayerButton"
+            onclick="showComingSoon()">
+
+            <span class="cross">
+                ✕
+            </span>
+
+            <span class="multiplayerText">
+                 MULTIPLAYER
+            </span>
+
+            <span class="comingSoon">
+                COMING SOON
+            </span>
+
+        </button>
+
+
+        <button
+            class="menuButton"
+            onclick="showPanel('controlsPanel')">
+
+            CONTROLS
+
+        </button>
+
+
+        <button
+            class="menuButton"
+            onclick="showPanel('howPanel')">
+
+             HOW TO PLAY
+
+        </button>
+
+
+        <button
+            class="menuButton"
+            onclick="showPanel('settingsPanel')">
+
+             SETTINGS
+
+        </button>
+
+    </div>
+</div>
+
+
+<!-- ================================================= -->
+<!-- MULTIPLAYER -->
+<!-- ================================================= -->
+
+<div
+    id="comingSoonPanel"
+    class="panel">
+
+    <div class="panelBox comingSoonBox">
+
+        <div class="bigCross">
+            ✕
+        </div>
+
+        <h2>
+            MULTIPLAYER
+        </h2>
+
+        <div class="soonText">
+            COMING SOON
+        </div>
+
+        <p>
+            Online multiplayer battles are
+            currently being developed.
+        </p>
+
+        <button
+            class="menuButton"
+            onclick="hidePanels()">
+
+            BACK
+
+        </button>
+
+    </div>
+</div>
+
+
+<!-- ================================================= -->
+<!-- CONTROLS -->
+<!-- ================================================= -->
+
+<div
+    id="controlsPanel"
+    class="panel">
+
+    <div class="panelBox">
+
+        <h2>
+             CONTROLS
+        </h2>
+
+        <p>
+            Move:
+            <span class="key">A</span>
+            <span class="key">D</span>
+        </p>
+
+        <p>
+            Jump:
+            <span class="key">W</span>
+        </p>
+
+        <p>
+            Punch:
+            <span class="key">F</span>
+        </p>
+
+        <p>
+            Kick:
+            <span class="key">G</span>
+        </p>
+
+        <p>
+            Power:
+            <span class="key">Q</span>
+        </p>
+
+        <p>
+            Dash:
+            <span class="key">E</span>
+        </p>
+
+        <p>
+            Restart:
+            <span class="key">R</span>
+        </p>
+
+        <p>
+            🤖 BLUE is controlled by the AI bot.
+        </p>
+
+        <button
+            class="menuButton"
+            onclick="hidePanels()">
+
+            BACK
+
+        </button>
+
+    </div>
+</div>
+
+
+<!-- ================================================= -->
+<!-- HOW TO PLAY -->
+<!-- ================================================= -->
+
+<div
+    id="howPanel"
+    class="panel">
+
+    <div class="panelBox">
+
+        <h2>
+             HOW TO PLAY
+        </h2>
+
+        <p>
+            You are the RED fighter.
+            Fight the BLUE AI bot.
+        </p>
+
+        <p>
+            The bot will chase you,
+            punch, kick, jump, dash
+            and use its power ability.
+        </p>
+
+        <p>
+            🔥 Power Strike deals heavy damage.
+        </p>
+
+        <p>
+            ⚡ Dash gives you a burst of speed.
+        </p>
+
+        <p>
+            🏆 Reduce the bot's health to zero
+            to win.
+        </p>
+
+        <button
+            class="menuButton"
+            onclick="hidePanels()">
+
+            BACK
+
+        </button>
+
+    </div>
+</div>
+
+
+<!-- ================================================= -->
+<!-- SETTINGS -->
+<!-- ================================================= -->
+
+<div
+    id="settingsPanel"
+    class="panel">
+
+    <div class="panelBox">
+
+        <h2>
+            SETTINGS
+        </h2>
+
+        <div class="settingsRow">
+            <div class="settingsLabel">IMAGE QUALITY</div>
+            <select
+                id="qualitySetting"
+                class="settingsControl"
+                onchange="applySettings()">
+                <option value="low">LOW</option>
+                <option value="medium" selected>MEDIUM</option>
+                <option value="high">HIGH</option>
+            </select>
+        </div>
+
+        <div class="settingsRow">
+            <div class="settingsLabel">MASTER VOLUME</div>
+            <div>
+                <input
+                    id="volumeSetting"
+                    class="settingsRange"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="100"
+                    oninput="applySettings()">
+                <span
+                    id="volumeValue"
+                    class="settingsValue">100%</span>
+            </div>
+        </div>
+
+        <div class="settingsRow">
+            <div class="settingsLabel">VOICE CHAT</div>
+            <div class="settingsDisabled">
+                DISABLED UNTIL<br>
+                MULTIPLAYER COMES OUT
+            </div>
+        </div>
+
+        <div class="settingsRow">
+            <div class="settingsLabel">SCREEN SHAKE</div>
+            <select
+                id="shakeSetting"
+                class="settingsControl"
+                onchange="applySettings()">
+                <option value="on" selected>ON</option>
+                <option value="off">OFF</option>
+            </select>
+        </div>
+
+        <div class="settingsRow">
+            <div class="settingsLabel">SHOW FPS</div>
+            <select
+                id="fpsSetting"
+                class="settingsControl"
+                onchange="applySettings()">
+                <option value="on" selected>ON</option>
+                <option value="off">OFF</option>
+            </select>
+        </div>
+
+        <div class="settingsRow">
+            <div class="settingsLabel">FPS LIMIT</div>
+            <select
+                id="fpsLimitSetting"
+                class="settingsControl"
+                onchange="applySettings()">
+                <option value="60">60 FPS</option>
+                <option value="120" selected>120 FPS</option>
+                <option value="240">240 FPS</option>
+                <option value="360">360 FPS</option>
+                <option value="unlimited">UNLIMITED / UNCAPPED</option>
+            </select>
+        </div>
+
+        <div class="settingsRow">
+            <div class="settingsLabel">FULLSCREEN</div>
+            <button
+                id="fullscreenSetting"
+                class="settingsButton"
+                type="button"
+                onclick="toggleFullscreen()">
+                ENTER FULLSCREEN
+            </button>
+        </div>
+
+        <button
+            class="menuButton"
+            onclick="hidePanels()">
+
+            BACK
+
+        </button>
+
+    </div>
+</div>
+
+
+<!-- ================================================= -->
+<!-- GAME -->
+<!-- ================================================= -->
+
+
+    <!-- FIGHT COUNTDOWN -->
+    <div id="fightCountdown" aria-live="assertive"></div>
+
+<div id="gameUI">
+
+    <canvas id="game"></canvas>
+
+
+    <!-- EARLY ACCESS TOP RIGHT -->
+
+    <div id="gameEarlyAccess">
+        EARLY ACCESS
+    </div>
+
+
+    <!-- FPS -->
+
+    <div id="fps">
+        FPS: 0
+    </div>
+
+
+    <!-- BOT -->
+
+    <div id="botLabel">
+        🤖 BLUE AI
+    </div>
+
+
+    <!-- MENU BUTTON -->
+
+    <button
+        id="menuButtonGame"
+        onclick="returnToMenu()">
+
+        ☰ MENU
+
+    </button>
+
+
+    <!-- HEALTH -->
+
+    <div id="ui">
+
+        <div class="health">
+
+            <div
+                id="p1"
+                class="bar">
+            </div>
+
+        </div>
+
+
+        <div id="timer">
+            60
+        </div>
+
+
+        <div class="health">
+
+            <div
+                id="p2"
+                class="bar">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ABILITIES -->
+
+    <div id="abilities">
+
+        <!-- PLAYER -->
+
+        <div class="abilityBox redAbility">
+
+            <div class="abilityName">
+                🔥 POWER [Q]
+            </div>
+
+            <div class="cooldown">
+
+                <div
+                    id="redPowerBar"
+                    class="cooldownBar redCD">
+                </div>
+
+            </div>
+
+            <div
+                id="redPowerText"
+                class="cdText">
+
+                READY
+
+            </div>
+
+
+            <div class="abilityName">
+                ⚡ DASH [E]
+            </div>
+
+            <div class="cooldown">
+
+                <div
+                    id="redDashBar"
+                    class="cooldownBar redCD">
+                </div>
+
+            </div>
+
+            <div
+                id="redDashText"
+                class="cdText">
+
+                READY
+
+            </div>
+
+        </div>
+
+
+        <!-- BOT -->
+
+        <div class="abilityBox blueAbility">
+
+            <div class="abilityName">
+                🤖 BOT POWER
+            </div>
+
+            <div class="cooldown">
+
+                <div
+                    id="bluePowerBar"
+                    class="cooldownBar blueCD">
+                </div>
+
+            </div>
+
+            <div
+                id="bluePowerText"
+                class="cdText">
+
+                READY
+
+            </div>
+
+
+            <div class="abilityName">
+                🤖 BOT DASH
+            </div>
+
+            <div class="cooldown">
+
+                <div
+                    id="blueDashBar"
+                    class="cooldownBar blueCD">
+                </div>
+
+            </div>
+
+            <div
+                id="blueDashText"
+                class="cdText">
+
+                READY
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- WIN / LOSE -->
+
+    <div id="message"></div>
+
+
+    <!-- CONTROLS -->
+
+    <div id="controls">
+
+        A/D MOVE ·
+        W JUMP ·
+        F PUNCH ·
+        G KICK ·
+        Q POWER ·
+        E DASH ·
+        R RESTART
+
+    </div>
+
+</div>
+
+
+<script>
+function neonFPSFrame(callback){
+
+    const limit =
+        window.gameSettings
+            ? Number(window.gameSettings.fpsLimit)
+            : 0;
+
+    if(!limit || limit <= 0){
+        requestAnimationFrame(callback);
+        return;
+    }
+
+    const delay = 1000 / limit;
+
+    setTimeout(
+        () => requestAnimationFrame(callback),
+        delay
+    );
+}
+
+
+
+/* ================================================= */
+/* CANVAS */
+/* ================================================= */
+
+const canvas =
+    document.getElementById("game");
+
+const ctx =
+    canvas.getContext("2d");
+
+let W = 0;
+let H = 0;
+let ground = 0;
+
+function resize(){
+
+    const quality =
+        window.gameSettings
+            ? window.gameSettings.quality
+            : "medium";
+
+    const scale =
+        quality === "low"
+            ? 0.65
+            : quality === "high"
+                ? 1
+                : 0.82;
+
+    W = window.innerWidth;
+    H = window.innerHeight;
+
+    canvas.width =
+        Math.max(1, Math.floor(W * scale));
+
+    canvas.height =
+        Math.max(1, Math.floor(H * scale));
+
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+
+    /*
+     * Keep game coordinates in CSS pixels while the canvas
+     * renders at a quality-dependent resolution.
+     */
+    ctx.setTransform(
+        canvas.width / W,
+        0,
+        0,
+        canvas.height / H,
+        0,
+        0
+    );
+
+    ground =
+        H - 135;
+}
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+window.gameSettings = {
+    quality: "medium",
+    volume: 100,
+    voiceChat: false,
+    screenShake: true,
+    showFPS: true,
+    fpsLimit: 120
+};
+
+function applySettings(){
+
+    const qualityEl =
+        document.getElementById("qualitySetting");
+
+    const volumeEl =
+        document.getElementById("volumeSetting");
+
+    const shakeEl =
+        document.getElementById("shakeSetting");
+
+    const fpsEl =
+        document.getElementById("fpsSetting");
+
+    const fpsLimitEl =
+        document.getElementById("fpsLimitSetting");
+
+    if(!qualityEl){
+        return;
+    }
+
+    window.gameSettings.quality =
+        qualityEl.value;
+
+    window.gameSettings.volume =
+        Number(volumeEl.value);
+
+    window.gameSettings.screenShake =
+        shakeEl.value === "on";
+
+    window.gameSettings.showFPS =
+        fpsEl.value === "on";
+
+    window.gameSettings.fpsLimit =
+        fpsLimitEl.value === "unlimited"
+            ? 0
+            : Number(fpsLimitEl.value);
+
+    const volumeValue =
+        document.getElementById("volumeValue");
+
+    volumeValue.textContent =
+        window.gameSettings.volume + "%";
+
+    document.getElementById("fps").style.display =
+        window.gameSettings.showFPS
+            ? "block"
+            : "none";
+
+    /*
+     * Audio can use this value when sound is added.
+     * No browser storage is used yet, as requested.
+     */
+    window.gameMasterVolume =
+        window.gameSettings.volume / 100;
+
+    resize();
+}
+
+function toggleFullscreen(){
+
+    if(!document.fullscreenElement){
+
+        document.documentElement
+            .requestFullscreen()
+            .then(() => {
+                updateFullscreenButton();
+            })
+            .catch(() => {});
+
+    }else{
+
+        document.exitFullscreen()
+            .then(() => {
+                updateFullscreenButton();
+            })
+            .catch(() => {});
+    }
+}
+
+function updateFullscreenButton(){
+
+    const button =
+        document.getElementById("fullscreenSetting");
+
+    if(!button){
+        return;
+    }
+
+    button.textContent =
+        document.fullscreenElement
+            ? "EXIT FULLSCREEN"
+            : "ENTER FULLSCREEN";
+}
+
+document.addEventListener(
+    "fullscreenchange",
+    updateFullscreenButton
+);
+
+resize();
+if(document.getElementById('qualitySetting')) applySettings();
+
+
+/* ================================================= */
+/* INPUT */
+/* ================================================= */
+
+const keys = {};
+
+window.addEventListener(
+    "keydown",
+    function(e){
+
+        const key =
+            e.key.toLowerCase();
+
+        keys[key] = true;
+
+        if([
+            "arrowup",
+            "arrowdown",
+            "arrowleft",
+            "arrowright"
+        ].includes(key)){
+
+            e.preventDefault();
+        }
+
+        if(
+            gameStarted &&
+            key === "r"
+        ){
+
+            reset();
+        }
+    }
+);
+
+window.addEventListener(
+    "keyup",
+    function(e){
+
+        keys[
+            e.key.toLowerCase()
+        ] = false;
+    }
+);
+
+
+/* ================================================= */
+/* PARTICLES */
+/* ================================================= */
+
+let particles = [];
+
+let screenShake = 0;
+
+function particleBurst(
+    x,
+    y,
+    color,
+    amount = 20
+){
+
+    for(
+        let i = 0;
+        i < amount;
+        i++
+    ){
+
+        particles.push({
+
+            x:x,
+            y:y,
+
+            vx:
+                (Math.random() - .5) *
+                12,
+
+            vy:
+                (Math.random() - .5) *
+                12,
+
+            life:
+                25 +
+                Math.random() * 25,
+
+            size:
+                3 +
+                Math.random() * 5,
+
+            color:color
+        });
+    }
+}
+
+function updateParticles(){
+
+    for(
+        let i = particles.length - 1;
+        i >= 0;
+        i--
+    ){
+
+        const p =
+            particles[i];
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        p.vx *= .96;
+        p.vy *= .96;
+
+        p.vy += .15;
+
+        p.life--;
+
+        if(p.life <= 0){
+
+            particles.splice(i,1);
+        }
+    }
+}
+
+function drawParticles(){
+
+    for(
+        const p of particles
+    ){
+
+        ctx.globalAlpha =
+            Math.max(
+                0,
+                p.life / 50
+            );
+
+        ctx.fillStyle =
+            p.color;
+
+        ctx.fillRect(
+            p.x,
+            p.y,
+            p.size,
+            p.size
+        );
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+
+/* ================================================= */
+/* FIGHTER */
+/* ================================================= */
+
+class Fighter{
+
+    constructor(
+        x,
+        color,
+        name
+    ){
+
+        this.startX = x;
+
+        this.x = x;
+
+        this.y =
+            ground - 100;
+
+        this.width = 50;
+        this.height = 100;
+
+        this.vx = 0;
+        this.vy = 0;
+
+        this.color = color;
+        this.name = name;
+
+        this.health = 100;
+
+        this.attack = 0;
+        this.attackType = "";
+
+        this.cooldown = 0;
+        this.hitDone = false;
+
+        this.powerCooldown = 0;
+        this.dashCooldown = 0;
+
+        this.powerMax = 5;
+        this.dashMax = 3;
+
+        this.powerTimer = 0;
+
+        /* ANIMATION STATE */
+        this.animTime = 0;
+        this.animState = "idle";
+        this.animLock = 0;
+        this.hitFlash = 0;
+        this.wasAirborne = false;
+
+        this.facing =
+            name === "YOU"
+            ? 1
+            : -1;
+    }
+
+
+    reset(){
+
+        this.x =
+            this.startX;
+
+        this.y =
+            ground - this.height;
+
+        this.vx = 0;
+        this.vy = 0;
+
+        this.health = 100;
+
+        this.attack = 0;
+        this.attackType = "";
+
+        this.cooldown = 0;
+        this.hitDone = false;
+
+        this.powerCooldown = 0;
+        this.dashCooldown = 0;
+
+        this.powerTimer = 0;
+
+        this.animTime = 0;
+        this.animState = "idle";
+        this.animLock = 0;
+        this.hitFlash = 0;
+        this.wasAirborne = false;
+    }
+
+
+    updateTimers(){
+
+        this.powerCooldown =
+            Math.max(
+                0,
+                this.powerCooldown - delta
+            );
+
+        this.dashCooldown =
+            Math.max(
+                0,
+                this.dashCooldown - delta
+            );
+
+        if(
+            this.cooldown > 0
+        ){
+
+            this.cooldown--;
+        }
+
+
+        /* POWER ATTACK TIMER */
+
+        if(
+            this.powerTimer > 0
+        ){
+
+            this.powerTimer -= delta;
+
+            if(
+                this.powerTimer <= 0 &&
+                !this.hitDone
+            ){
+
+                this.powerTimer = 0;
+
+                this.performPowerHit();
+            }
+        }
+    }
+
+
+    /* ================================================= */
+    /* ANIMATIONS */
+    /* ================================================= */
+
+    setAnimation(state, lock = 0){
+        if(this.animState !== state){
+            this.animState = state;
+            this.animTime = 0;
+        }
+
+        if(lock > 0){
+            this.animLock = Math.max(this.animLock, lock);
+        }
+    }
+
+    updateAnimation(){
+        this.animTime += delta;
+
+        if(this.animLock > 0){
+            this.animLock = Math.max(0, this.animLock - delta);
+        }
+
+        if(this.hitFlash > 0){
+            this.hitFlash = Math.max(0, this.hitFlash - delta);
+        }
+
+        const airborne =
+            this.y + this.height < ground - 2;
+
+        if(airborne){
+            this.setAnimation(
+                this.vy < 0 ? "jump" : "fall"
+            );
+        }else if(this.animLock <= 0){
+            if(this.attackType === "power" && this.attack > 0){
+                this.setAnimation("power");
+            }else if(this.attackType === "punch" && this.attack > 0){
+                this.setAnimation("punch");
+            }else if(this.attackType === "kick" && this.attack > 0){
+                this.setAnimation("kick");
+            }else if(Math.abs(this.vx) > 1.2){
+                this.setAnimation("run");
+            }else{
+                this.setAnimation("idle");
+            }
+        }
+
+        this.wasAirborne = airborne;
+    }
+
+    updatePhysics(){
+
+        this.updateTimers();
+        this.updateAnimation();
+
+        this.vy += .6;
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.vx *= .82;
+
+
+        if(
+            this.y +
+            this.height >=
+            ground
+        ){
+
+            this.y =
+                ground -
+                this.height;
+
+            this.vy = 0;
+        }
+
+
+        this.x =
+            Math.max(
+                15,
+                Math.min(
+                    W -
+                    this.width -
+                    15,
+                    this.x
+                )
+            );
+
+
+        if(
+            this.attack > 0
+        ){
+
+            this.attack--;
+
+            if(
+                this.attack <= 10 &&
+                !this.hitDone &&
+                this.attackType !==
+                "power"
+            ){
+
+                this.hit();
+            }
+
+
+            if(
+                this.attack <= 0
+            ){
+
+                this.attack = 0;
+
+                this.attackType = "";
+            }
+        }
+    }
+
+
+    playerUpdate(enemy){
+
+        if(
+            this.health <= 0
+        ){
+
+            return;
+        }
+
+
+        if(!this.attack){
+
+            if(keys.a){
+
+                this.vx = -5;
+
+                this.facing = -1;
+            }
+
+            if(keys.d){
+
+                this.vx = 5;
+
+                this.facing = 1;
+            }
+
+
+            if(
+                keys.w &&
+                this.y +
+                this.height >=
+                ground - 1
+            ){
+
+                this.vy = -13;
+            }
+
+
+            if(keys.f){
+
+                this.startAttack(
+                    "punch"
+                );
+            }
+
+
+            if(keys.g){
+
+                this.startAttack(
+                    "kick"
+                );
+            }
+
+
+            if(keys.q){
+
+                this.powerStrike();
+            }
+
+
+            if(keys.e){
+
+                this.dash();
+            }
+        }
+
+
+        this.updatePhysics();
+
+
+        if(!this.attack){
+
+            this.facing =
+                this.x <
+                enemy.x
+                ? 1
+                : -1;
+        }
+    }
+
+
+    startAttack(type){
+
+        if(
+            this.cooldown > 0 ||
+            this.attack > 0
+        ){
+
+            return;
+        }
+
+
+        this.attackType = type;
+
+        this.attack =
+            type === "punch"
+            ? 18
+            : 25;
+
+        this.cooldown =
+            type === "punch"
+            ? 20
+            : 28;
+
+        this.hitDone = false;
+    }
+
+
+    hit(){
+
+        this.hitDone = true;
+
+        if(!currentEnemy){
+
+            return;
+        }
+
+
+        const distance =
+            Math.abs(
+                this.x +
+                this.width / 2 -
+                (
+                    currentEnemy.x +
+                    currentEnemy.width / 2
+                )
+            );
+
+
+        const range =
+            this.attackType === "punch"
+            ? 85
+            : 105;
+
+
+        if(
+            distance <= range
+        ){
+
+            const damage =
+                this.attackType === "punch"
+                ? 8
+                : 12;
+
+
+            currentEnemy.takeDamage(
+                damage,
+                this.facing
+            );
+
+
+            particleBurst(
+                currentEnemy.x +
+                currentEnemy.width / 2,
+
+                currentEnemy.y + 45,
+
+                "#ffffff",
+
+                15
+            );
+
+
+            screenShake = 5;
+        }
+    }
+
+
+    powerStrike(){
+
+        if(
+            this.powerCooldown > 0 ||
+            this.attack > 0
+        ){
+
+            return;
+        }
+
+
+        this.powerCooldown =
+            this.powerMax;
+
+        this.attack = 35;
+
+        this.attackType =
+            "power";
+
+        this.hitDone = false;
+
+        this.powerTimer = .18;
+
+
+        particleBurst(
+            this.x +
+            this.width / 2,
+
+            this.y + 45,
+
+            this.color,
+
+            35
+        );
+
+
+        screenShake = 8;
+    }
+
+
+    performPowerHit(){
+
+        this.hitDone = true;
+
+        if(!currentEnemy){
+
+            return;
+        }
+
+
+        const distance =
+            Math.abs(
+                this.x +
+                this.width / 2 -
+                (
+                    currentEnemy.x +
+                    currentEnemy.width / 2
+                )
+            );
+
+
+        if(
+            distance < 155
+        ){
+
+            currentEnemy.takeDamage(
+                25,
+                this.facing
+            );
+
+
+            currentEnemy.vx =
+                this.facing * 15;
+
+            currentEnemy.vy = -8;
+
+
+            particleBurst(
+                currentEnemy.x +
+                currentEnemy.width / 2,
+
+                currentEnemy.y + 45,
+
+                "#ffff00",
+
+                40
+            );
+
+
+            screenShake = 16;
+        }
+    }
+
+
+    dash(){
+
+        if(
+            this.dashCooldown > 0
+        ){
+
+            return;
+        }
+
+
+        this.dashCooldown =
+            this.dashMax;
+
+        this.vx =
+            this.facing * 20;
+
+
+        particleBurst(
+            this.x +
+            this.width / 2,
+
+            this.y + 70,
+
+            this.color,
+
+            25
+        );
+
+
+        screenShake = 5;
+    }
+
+
+    takeDamage(
+        amount,
+        direction
+    ){
+
+        this.health =
+            Math.max(
+                0,
+                this.health - amount
+            );
+
+        this.vx =
+            direction * 8;
+
+        this.vy = -4;
+
+        this.hitFlash = .14;
+        this.setAnimation("hit", .16);
+    }
+
+
+    draw(){
+
+        const x = this.x;
+        const y = this.y;
+
+        const t = this.animTime;
+        const bob =
+            this.animState === "idle"
+                ? Math.sin(t * 5) * 2
+                : 0;
+
+        const run =
+            this.animState === "run"
+                ? Math.sin(t * 18)
+                : 0;
+
+        const attackProgress =
+            this.attack > 0
+                ? 1 - this.attack / (
+                    this.attackType === "punch"
+                        ? 18
+                        : this.attackType === "kick"
+                            ? 25
+                            : 35
+                )
+                : 0;
+
+        let bodyTilt = 0;
+        let headY = y + 18 + bob;
+        let bodyY = y + 30 + bob;
+
+        if(this.animState === "jump"){
+            bodyTilt = -0.10;
+            headY -= 4;
+            bodyY -= 4;
+        }
+
+        if(this.animState === "fall"){
+            bodyTilt = 0.08;
+            headY += 3;
+            bodyY += 3;
+        }
+
+        if(this.animState === "hit"){
+            bodyTilt = -this.facing * 0.16;
+            headY += 2;
+            bodyY += 2;
+        }
+
+        if(this.animState === "punch"){
+            bodyTilt = this.facing * 0.04;
+        }
+
+        if(this.animState === "kick"){
+            bodyTilt = this.facing * 0.08;
+        }
+
+        if(this.animState === "power"){
+            bodyTilt = this.facing * 0.14;
+        }
+
+        ctx.save();
+
+        /* GLOBAL FIGHTER TRANSFORM */
+        ctx.translate(x + 25, y + 100);
+        ctx.rotate(bodyTilt);
+        ctx.translate(-25, -100);
+
+        /* GLOW */
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur =
+            this.animState === "power" ? 40 : 20;
+
+        if(this.hitFlash > 0){
+            ctx.shadowColor = "#ffffff";
+            ctx.shadowBlur = 45;
+        }
+
+        /* BODY */
+        ctx.fillStyle =
+            this.hitFlash > 0
+                ? "#ffffff"
+                : this.color;
+
+        ctx.fillRect(
+            8,
+            bodyY - y,
+            34,
+            50
+        );
+
+        /* HEAD */
+        ctx.beginPath();
+        ctx.arc(
+            25,
+            headY - y,
+            18,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+
+        /* LEGS */
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 12;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+
+        let leg1X = 13;
+        let leg2X = 37;
+        let leg1Y = 100;
+        let leg2Y = 100;
+
+        if(this.animState === "run"){
+            leg1X = 13 + run * 12;
+            leg2X = 37 - run * 12;
+            leg1Y = 100 - Math.abs(run) * 3;
+            leg2Y = 100 - Math.abs(run) * 3;
+        }else if(this.animState === "jump" || this.animState === "fall"){
+            leg1X = 8;
+            leg2X = 42;
+            leg1Y = 94;
+            leg2Y = 94;
+        }else if(this.animState === "kick"){
+            leg2X = 37 + this.facing * 28 *
+                Math.sin(Math.min(1, attackProgress * 1.4) * Math.PI);
+            leg2Y = 88;
+        }
+
+        ctx.moveTo(
+            18,
+            78 + (this.animState === "run" ? -Math.abs(run) * 3 : 0)
+        );
+        ctx.lineTo(leg1X, leg1Y);
+
+        ctx.moveTo(
+            32,
+            78 + (this.animState === "run" ? -Math.abs(run) * 3 : 0)
+        );
+        ctx.lineTo(leg2X, leg2Y);
+
+        ctx.stroke();
+
+        /* ARMS */
+        ctx.beginPath();
+
+        const armBaseY = 45 + bob;
+
+        if(this.animState === "power"){
+            ctx.lineWidth = 18;
+            ctx.shadowBlur = 40;
+
+            ctx.moveTo(25, armBaseY);
+            ctx.lineTo(
+                25 + this.facing * 75,
+                armBaseY
+            );
+
+        }else if(this.animState === "punch"){
+            const reach =
+                35 +
+                28 * Math.sin(
+                    Math.min(1, attackProgress * 1.25) * Math.PI
+                );
+
+            ctx.lineWidth = 11;
+
+            /* rear arm */
+            ctx.moveTo(15, armBaseY - 2);
+            ctx.lineTo(
+                5 - this.facing * 8,
+                armBaseY + 14
+            );
+
+            /* punching arm */
+            ctx.moveTo(28, armBaseY);
+            ctx.lineTo(
+                28 + this.facing * reach,
+                armBaseY - 3
+            );
+
+        }else if(this.animState === "kick"){
+            ctx.lineWidth = 10;
+
+            /* guard arm */
+            ctx.moveTo(14, armBaseY);
+            ctx.lineTo(
+                5 + this.facing * 4,
+                armBaseY + 12
+            );
+
+            /* balance arm */
+            ctx.moveTo(36, armBaseY);
+            ctx.lineTo(
+                47 - this.facing * 4,
+                armBaseY + 10
+            );
+
+        }else if(this.animState === "hit"){
+            ctx.lineWidth = 11;
+
+            ctx.moveTo(17, armBaseY);
+            ctx.lineTo(
+                3 - this.facing * 7,
+                armBaseY - 10
+            );
+
+            ctx.moveTo(34, armBaseY);
+            ctx.lineTo(
+                48 - this.facing * 7,
+                armBaseY - 12
+            );
+
+        }else if(this.animState === "jump" || this.animState === "fall"){
+            ctx.lineWidth = 10;
+
+            ctx.moveTo(14, armBaseY);
+            ctx.lineTo(
+                2 - this.facing * 5,
+                armBaseY - 18
+            );
+
+            ctx.moveTo(36, armBaseY);
+            ctx.lineTo(
+                48 - this.facing * 5,
+                armBaseY - 18
+            );
+
+        }else{
+            /* IDLE / RUN */
+            ctx.lineWidth = 10;
+
+            const swing = run * 8;
+
+            ctx.moveTo(13, armBaseY);
+            ctx.lineTo(
+                3 - swing,
+                armBaseY + 12
+            );
+
+            ctx.moveTo(37, armBaseY);
+            ctx.lineTo(
+                47 + swing,
+                armBaseY + 12
+            );
+        }
+
+        ctx.stroke();
+
+        /* POWER EFFECT */
+        if(this.animState === "power"){
+            ctx.strokeStyle = "#ffff00";
+            ctx.lineWidth = 5;
+            ctx.shadowColor = "#ffff00";
+            ctx.shadowBlur = 35;
+
+            ctx.beginPath();
+            ctx.arc(
+                25 + this.facing * 70,
+                45,
+                25 + Math.sin(t * 20) * 5,
+                0,
+                Math.PI * 2
+            );
+            ctx.stroke();
+        }
+
+        /* RUNNING TRAIL */
+        if(this.animState === "run" && Math.abs(this.vx) > 2){
+            ctx.globalAlpha = .35;
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+
+            ctx.moveTo(
+                25 - this.facing * 12,
+                62
+            );
+
+            ctx.lineTo(
+                25 - this.facing * 28,
+                62
+            );
+
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+        }
+
+        ctx.restore();
+
+        /* NAME */
+        ctx.fillStyle = "white";
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+
+        ctx.fillText(
+            this.name,
+            x + 25,
+            y - 10
+        );
+    }
+}
+
+
+/* ================================================= */
+/* GAME VARIABLES */
+/* ================================================= */
+
+let red;
+let blue;
+
+let currentEnemy = null;
+
+let gameStarted = false;
+let gameOver = false;
+
+let time = 60;
+
+let delta = 0;
+let lastTime = 0;
+
+let frameCount = 0;
+let fpsTime = 0;
+
+
+/* ================================================= */
+/* RESET */
+/* ================================================= */
+
+function reset(){
+
+    red =
+        new Fighter(
+            W * .25,
+            "#ff1744",
+            "YOU"
+        );
+
+
+    blue =
+        new Fighter(
+            W * .70,
+            "#00d9ff",
+            "BOT"
+        );
+
+
+    particles = [];
+
+    time = 60;
+
+    gameOver = false;
+
+    currentEnemy = null;
+
+
+    document.getElementById(
+        "message"
+    ).style.display =
+        "none";
+
+    const countdown =
+        document.getElementById("fightCountdown");
+
+    if(countdown){
+        countdown.style.display = "none";
+        countdown.textContent = "";
+    }
+
+    countdownActive = false;
+}
+
+
+/* ================================================= */
+/* BOT AI */
+/* ================================================= */
+
+function botAI(){
+
+    if(
+        blue.health <= 0 ||
+        gameOver
+    ){
+
+        return;
+    }
+
+
+    const dx =
+        red.x -
+        blue.x;
+
+
+    const distance =
+        Math.abs(dx);
+
+
+    /* FACE PLAYER */
+
+    blue.facing =
+        dx >= 0
+        ? 1
+        : -1;
+
+
+    /* CHASE */
+
+    if(
+        distance > 115 &&
+        blue.attack <= 0
+    ){
+
+        blue.vx =
+            blue.facing * 3.2;
+    }
+
+
+    /* SLOW DOWN */
+
+    if(
+        distance <= 115 &&
+        blue.attack <= 0
+    ){
+
+        blue.vx *= .65;
+    }
+
+
+    /* ATTACK */
+
+    if(
+        distance < 125 &&
+        blue.attack <= 0 &&
+        blue.cooldown <= 0
+    ){
+
+        if(
+            Math.random() < .035
+        ){
+
+            if(
+                Math.random() < .5
+            ){
+
+                blue.startAttack(
+                    "punch"
+                );
+
+            }else{
+
+                blue.startAttack(
+                    "kick"
+                );
+            }
+        }
+    }
+
+
+    /* POWER */
+
+    if(
+        distance < 155 &&
+        blue.attack <= 0 &&
+        blue.powerCooldown <= 0
+    ){
+
+        if(
+            Math.random() < .012
+        ){
+
+            blue.powerStrike();
+        }
+    }
+
+
+    /* DASH */
+
+    if(
+        distance > 180 &&
+        distance < 500 &&
+        blue.attack <= 0 &&
+        blue.dashCooldown <= 0
+    ){
+
+        if(
+            Math.random() < .008
+        ){
+
+            blue.dash();
+        }
+    }
+
+
+    /* JUMP */
+
+    if(
+        blue.y +
+        blue.height >=
+        ground - 1 &&
+        Math.random() < .006
+    ){
+
+        blue.vy = -12;
+    }
+
+
+    /* DON'T OVERLAP */
+
+    if(
+        distance < 45
+    ){
+
+        blue.vx =
+            blue.facing * -2.5;
+    }
+
+
+    currentEnemy = red;
+
+    blue.updatePhysics();
+
+    currentEnemy = null;
+}
+
+
+/* ================================================= */
+/* BACKGROUND */
+/* ================================================= */
+
+function drawBackground(){
+
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            H
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "#07072b"
+    );
+
+
+    gradient.addColorStop(
+        .55,
+        "#30204d"
+    );
+
+
+    gradient.addColorStop(
+        1,
+        "#090914"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    /* MOON */
+
+    ctx.fillStyle =
+        "#fff0a8";
+
+    ctx.shadowColor =
+        "#fff0a8";
+
+    ctx.shadowBlur = 30;
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        W * .8,
+        H * .2,
+        50,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+
+    /* CITY */
+
+    ctx.fillStyle =
+        "#111126";
+
+
+    for(
+        let x = 0;
+        x < W;
+        x += 70
+    ){
+
+        const height =
+            70 +
+            ((x * 17) % 130);
+
+
+        ctx.fillRect(
+            x,
+            ground - height,
+            55,
+            height
+        );
+    }
+
+
+    /* FLOOR */
+
+    ctx.fillStyle =
+        "#11111b";
+
+
+    ctx.fillRect(
+        0,
+        ground,
+        W,
+        H - ground
+    );
+
+
+    /* NEON LINE */
+
+    ctx.strokeStyle =
+        "#8a2be2";
+
+    ctx.shadowColor =
+        "#8a2be2";
+
+    ctx.shadowBlur = 15;
+
+    ctx.lineWidth = 3;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        0,
+        ground
+    );
+
+    ctx.lineTo(
+        W,
+        ground
+    );
+
+    ctx.stroke();
+
+
+    ctx.shadowBlur = 0;
+
+
+    /* GRID */
+
+    ctx.strokeStyle =
+        "#292941";
+
+    ctx.lineWidth = 2;
+
+
+    for(
+        let x = 0;
+        x < W;
+        x += 80
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            W / 2,
+            ground
+        );
+
+        ctx.lineTo(
+            x,
+            H
+        );
+
+        ctx.stroke();
+    }
+}
+
+
+/* ================================================= */
+/* UI */
+/* ================================================= */
+
+function updateCooldown(
+    fighter,
+    bar,
+    text,
+    max,
+    type
+){
+
+    const cooldown =
+        type === "power"
+        ? fighter.powerCooldown
+        : fighter.dashCooldown;
+
+
+    const percent =
+        (
+            1 -
+            cooldown / max
+        ) * 100;
+
+
+    document.getElementById(bar)
+        .style.width =
+        Math.max(
+            0,
+            percent
+        ) + "%";
+
+
+    document.getElementById(text)
+        .textContent =
+        cooldown <= 0
+        ? "READY"
+        : cooldown.toFixed(1) + "s";
+}
+
+
+function updateUI(){
+
+    document.getElementById("p1")
+        .style.width =
+        red.health + "%";
+
+
+    document.getElementById("p2")
+        .style.width =
+        blue.health + "%";
+
+
+    document.getElementById("timer")
+        .textContent =
+        Math.ceil(time);
+
+
+    updateCooldown(
+        red,
+        "redPowerBar",
+        "redPowerText",
+        red.powerMax,
+        "power"
+    );
+
+
+    updateCooldown(
+        red,
+        "redDashBar",
+        "redDashText",
+        red.dashMax,
+        "dash"
+    );
+
+
+    updateCooldown(
+        blue,
+        "bluePowerBar",
+        "bluePowerText",
+        blue.powerMax,
+        "power"
+    );
+
+
+    updateCooldown(
+        blue,
+        "blueDashBar",
+        "blueDashText",
+        blue.dashMax,
+        "dash"
+    );
+}
+
+
+/* ================================================= */
+/* END GAME */
+/* ================================================= */
+
+function endGame(){
+
+    if(gameOver)
+        return;
+
+
+    gameOver = true;
+
+
+    let result;
+
+
+    if(
+        red.health <= 0 &&
+        blue.health <= 0
+    ){
+
+        result = "DRAW!";
+
+    }else if(
+        red.health <= 0
+    ){
+
+        result = "BOT WINS!";
+
+    }else if(
+        blue.health <= 0
+    ){
+
+        result = "YOU WIN!";
+
+    }else if(
+        red.health > blue.health
+    ){
+
+        result = "YOU WIN!";
+
+    }else{
+
+        result = "BOT WINS!";
+    }
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.textContent =
+        result +
+        " — PRESS R";
+
+
+    message.style.display =
+        "flex";
+}
+
+
+/* ================================================= */
+/* GAME LOOP */
+/* ================================================= */
+
+function gameLoop(timestamp){
+
+    if(!lastTime){
+
+        lastTime =
+            timestamp;
+    }
+
+
+    delta =
+        Math.min(
+            (timestamp - lastTime) /
+            1000,
+            .05
+        );
+
+
+    lastTime =
+        timestamp;
+
+
+    /* FPS */
+
+    frameCount++;
+
+    fpsTime += delta;
+
+
+    if(
+        fpsTime >= .5
+    ){
+
+        if(window.gameSettings.showFPS){
+            document.getElementById("fps")
+                .textContent =
+                "FPS: " +
+                Math.round(
+                    frameCount /
+                    fpsTime
+                );
+        }
+
+        frameCount = 0;
+
+        fpsTime = 0;
+
+        /*
+         * Skip the old FPS assignment below.
+         */
+
+    }
+
+
+    /* GAME */
+
+    if(
+        gameStarted &&
+        !gameOver
+    ){
+
+        time -= delta;
+
+
+        if(
+            time <= 0
+        ){
+
+            time = 0;
+
+            endGame();
+        }
+
+
+        /* PLAYER */
+
+        currentEnemy = blue;
+
+        red.playerUpdate(blue);
+
+        currentEnemy = null;
+
+
+        /* BOT */
+
+        botAI();
+
+
+        if(
+            red.health <= 0 ||
+            blue.health <= 0
+        ){
+
+            endGame();
+        }
+
+
+        updateParticles();
+    }
+
+
+    /* DRAW */
+
+    if(gameStarted){
+
+        ctx.save();
+
+
+        if(
+            screenShake > 0 &&
+            window.gameSettings.screenShake
+        ){
+
+            ctx.translate(
+
+                (Math.random() - .5) *
+                screenShake,
+
+                (Math.random() - .5) *
+                screenShake
+            );
+
+
+            screenShake *= .85;
+
+
+            if(
+                screenShake < .2
+            ){
+
+                screenShake = 0;
+            }
+        }
+
+
+        drawBackground();
+
+
+        red.draw();
+
+        blue.draw();
+
+
+        drawParticles();
+
+
+        ctx.restore();
+
+
+        updateUI();
+    }
+
+
+    requestAnimationFrame(
+        gameLoop
+    );
+}
+
+
+/* ================================================= */
+/* MENU */
+/* ================================================= */
+
+
+/* ================================================= */
+/* FIGHT COUNTDOWN */
+/* ================================================= */
+
+let countdownActive = false;
+
+function wait(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function startFightCountdown(){
+    const countdown =
+        document.getElementById("fightCountdown");
+
+    if(!countdown){
+        gameStarted = true;
+        return;
+    }
+
+    countdownActive = true;
+    gameStarted = false;
+
+    const steps = ["3", "2", "1", "FIGHT!"];
+
+    countdown.style.display = "flex";
+
+    for(const step of steps){
+        countdown.textContent = step;
+
+        /* Restart the pop animation for every number. */
+        countdown.style.animation = "none";
+        void countdown.offsetWidth;
+        countdown.style.animation =
+            "countdownPop .7s ease both";
+
+        await wait(
+            step === "FIGHT!" ? 850 : 700
+        );
+    }
+
+    countdown.style.display = "none";
+    countdown.textContent = "";
+    countdownActive = false;
+    gameStarted = true;
+}
+
+
+function startGame(){
+
+    document.getElementById("menu")
+        .style.display =
+        "none";
+
+
+    document.getElementById("gameUI")
+        .style.display =
+        "block";
+
+
+    reset();
+
+    /* Start the fight only after 3, 2, 1, FIGHT! */
+    startFightCountdown();
+}
+
+
+function showPanel(id){
+
+    document.getElementById(id)
+        .style.display =
+        "flex";
+}
+
+
+function showComingSoon(){
+
+    document.getElementById(
+        "comingSoonPanel"
+    ).style.display =
+        "flex";
+}
+
+
+function hidePanels(){
+
+    document.querySelectorAll(
+        ".panel"
+    ).forEach(
+        panel =>
+            panel.style.display =
+            "none"
+    );
+}
+
+
+function returnToMenu(){
+
+    gameStarted = false;
+
+
+    document.getElementById(
+        "gameUI"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "menu"
+    ).style.display =
+        "flex";
+}
+
+
+/* ================================================= */
+/* START GAME LOOP */
+/* ================================================= */
+
+requestAnimationFrame(
+    gameLoop
+);
+
+</script>
+
+</body>
+</html>
